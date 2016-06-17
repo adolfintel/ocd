@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Obsessive Compressive Disorder</title>
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+<meta name="description" content="Compresses an image repeatedly" />
+<style>
+html,body{
+	margin:0;padding:0;border:none;
+	width:100%;height:100%;
+	background-color:#EEEEEE;
+	color:#505050;
+}
+a{
+	color:#808080 !important;
+}
+#dropArea{
+	display:block;
+	width:100%;height:100%;
+	margin-left:auto; margin-right:auto;
+}
+#imgArea{
+	display:block;
+	margin:auto;
+	position:absolute;
+	top:0; left:0; bottom:0; right:0;
+}
+#imgArea.fullWidth{
+	width:100%;
+	height:auto;
+}
+#imgArea.fullHeight{
+	width:auto;
+	height:100%;
+}
+#status{
+	position:fixed;
+	bottom:0;right:0;
+	padding:0.3em 0.7em;
+	background-color:#FFFFFF;
+	color:#000000;
+	box-shadow:0 0 0.7em rgba(0,0,0,0.1);
+	z-index:9;
+}
+#counter{
+	display:inline-block;
+	font-family:monospace;
+	min-width:2.5em;
+}
+
+</style>
+<script type="text/javascript">
+function compress(img,quality){
+	var c=document.createElement('canvas');
+	c.width=img.naturalWidth;
+	c.height=img.naturalHeight;
+	c.getContext("2d").drawImage(img,0,0);
+	return c.toDataURL("image/jpeg",quality/100);
+}
+function scale(img,scale){
+	if(img.naturalHeight==0||img.naturalWidth==0) return img;
+	var c=document.createElement('canvas');
+	c.width=img.naturalWidth*scale;
+	c.height=img.naturalHeight*scale;
+	c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+	return c.toDataURL();
+}
+setInterval(function(){
+	var ir=ima.naturalWidth/ima.naturalHeight, lr=document.body.clientWidth/document.body.clientHeight;
+	if(ir>=lr) ima.className="fullWidth"; else ima.className="fullHeight";
+},20);
+</script>
+</head>
+<body>
+<div id="dropArea">
+	<div style="font-size:3em;text-align:center;text-shadow:0 0.04em 0 #FFFFFF;">
+		Drop an image here<br/>
+		<input type="file" id="manualInput"/>
+		<div style="margin-top:4em; font-size:1rem;">
+			<a href="http://adolfintel.com/?p=ocd/index.frag" target="_blank">Source code</a>
+		</div>
+	</div>
+</div>
+<div id="status">
+	Compressed <span id="counter">0</span> times
+</div>
+<img id="imgArea" style="display:none"></img>
+<script type="text/javascript">
+var MAX_SIZE=800;
+var counter=0;
+var d=document.getElementById("dropArea");
+var ima=document.getElementById("imgArea");
+var interval;
+d.addEventListener('dragover',function(e){e.preventDefault();});
+d.addEventListener('dragleave',function(e){e.preventDefault();});
+function onFileLoaded(e){
+	e.preventDefault();
+	try{
+		var f=e.target.files?e.target.files[0]:e.dataTransfer.files[0];
+		if(f.type.indexOf('image')!=-1){
+			d.style.display='none';
+			ima.style.display='';
+			var r=new FileReader();
+			r.onload=function(e){
+				ima.src=e.target.result;
+				ima.onload=function(){
+					ima.onload=null;
+					if(ima.naturalHeight>MAX_SIZE||ima.naturalWidth>MAX_SIZE){
+						if(ima.naturalWidth>=ima.naturalHeight){
+							ima.src=scale(ima,MAX_SIZE/ima.naturalWidth);
+						}else{
+							ima.src=scale(ima,MAX_SIZE/ima.naturalHeight);
+						}
+					}
+					counter=0;
+					interval=setInterval(function(){
+						ima.src=compress(ima,50+Math.random()*50);
+						counter++;
+						document.getElementById("counter").innerHTML=counter;
+					}.bind(this),100);
+				}.bind(this);
+			}.bind(this);
+			r.readAsDataURL(f);
+		}
+	}catch(e){console.log(e);alert("A horrible tragedy occurred. See console for details");}
+}
+d.addEventListener('drop',function(e){onFileLoaded(e)}.bind(this));
+document.getElementById("manualInput").addEventListener('change',function(e){onFileLoaded(e)}.bind(this));
+document.body.addEventListener('click',function(){if(interval){clearInterval(interval);ima.style.display='none';d.style.display='';counter=0;document.getElementById("counter").innerHTML=counter;}}.bind(this));
+</script>
+</body>
+</html>
