@@ -81,8 +81,8 @@ setInterval(function(){
 		</div>
 	</div>
 </div>
-<div id="status">
-	Compressed <span id="counter">0</span> times
+<div id="status" style="display:none">
+	Compressed <span id="counter">0</span> times<br/>Tap anywhere to stop
 </div>
 <img id="imgArea" style="display:none"></img>
 <script type="text/javascript">
@@ -91,6 +91,7 @@ var counter=0;
 var d=document.getElementById("dropArea");
 var ima=document.getElementById("imgArea");
 var interval;
+var busy=false;
 d.addEventListener('dragover',function(e){e.preventDefault();});
 d.addEventListener('dragleave',function(e){e.preventDefault();});
 function onFileLoaded(e){
@@ -113,20 +114,24 @@ function onFileLoaded(e){
 						}
 					}
 					counter=0;
+					document.getElementById("status").style.display='';
 					interval=setInterval(function(){
+						if(busy)return;
+						busy=true;
 						ima.src=compress(ima,50+Math.random()*50);
 						counter++;
 						document.getElementById("counter").innerHTML=counter;
+						busy=false;
 					}.bind(this),100);
 				}.bind(this);
 			}.bind(this);
 			r.readAsDataURL(f);
 		}
-	}catch(e){console.log(e);alert("A horrible tragedy occurred. See console for details");}
+	}catch(e){console.log(e);}
 }
 d.addEventListener('drop',function(e){onFileLoaded(e)}.bind(this));
 document.getElementById("manualInput").addEventListener('change',function(e){onFileLoaded(e)}.bind(this));
-document.body.addEventListener('click',function(){if(interval){clearInterval(interval);ima.style.display='none';d.style.display='';counter=0;document.getElementById("counter").innerHTML=counter;}}.bind(this));
+document.body.addEventListener('click',function(){if(interval){clearInterval(interval);ima.style.display='none';d.style.display='';busy=false;counter=0;document.getElementById("status").style.display='none';}}.bind(this));
 </script>
 </body>
 </html>
