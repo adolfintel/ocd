@@ -3,52 +3,9 @@
 <head>
 <title>Obsessive Compressive Disorder</title>
 <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, minimum-scale=1, maximum-scale=1" />
-<meta name="description" content="Compresses an image repeatedly" />
-<style>
-html,body{
-	margin:0;padding:0;border:none;
-	width:100%;height:100%;
-	background-color:#EEEEEE;
-	color:#505050;
-}
-a{
-	color:#808080 !important;
-}
-#dropArea{
-	display:block;
-	width:100%;height:100%;
-	margin-left:auto; margin-right:auto;
-}
-#imgArea{
-	display:block;
-	margin:auto;
-	position:absolute;
-	top:0; left:0; bottom:0; right:0;
-}
-#imgArea.fullWidth{
-	width:100%;
-	height:auto;
-}
-#imgArea.fullHeight{
-	width:auto;
-	height:100%;
-}
-#status{
-	position:fixed;
-	bottom:0;right:0;
-	padding:0.3em 0.7em;
-	background-color:#FFFFFF;
-	color:#000000;
-	box-shadow:0 0 0.7em rgba(0,0,0,0.1);
-	z-index:9;
-}
-#counter{
-	display:inline-block;
-	font-family:monospace;
-	min-width:2.5em;
-}
-
-</style>
+<meta name="description" content="Image quality devastator. Compresses an image repeatedly using lossy JPEG compression" />
+<meta property="og:image" content="http://ocd.adolfintel.com/social.jpg"/>
+<link rel="stylesheet" type="text/css" href="style.css"/>
 <script type="text/javascript">
 function compress(img,quality){
 	var c=document.createElement('canvas');
@@ -65,19 +22,15 @@ function scale(img,scale){
 	c.getContext("2d").drawImage(img,0,0,c.width,c.height);
 	return c.toDataURL();
 }
-setInterval(function(){
-	var ir=ima.naturalWidth/ima.naturalHeight, lr=document.body.clientWidth/document.body.clientHeight;
-	if(ir>=lr) ima.className="fullWidth"; else ima.className="fullHeight";
-},20);
 </script>
 </head>
 <body>
 <div id="dropArea">
-	<div style="font-size:3em;text-align:center;text-shadow:0 0.04em 0 #FFFFFF;">
+	<div id="dropText">
 		Drop an image here<br/>
 		<input type="file" id="manualInput"/>
 		<div style="margin-top:4em; font-size:1rem;">
-			<a href="http://adolfintel.com/?p=ocd/index.frag" target="_blank">Source code</a>
+			<a href="https://github.com/adolfintel/ocd" target="_blank">Source code</a>
 		</div>
 	</div>
 </div>
@@ -86,7 +39,7 @@ setInterval(function(){
 </div>
 <img id="imgArea" style="display:none"></img>
 <script type="text/javascript">
-var MAX_SIZE=800;
+var MAX_SIZE=1200;
 var counter=0;
 var d=document.getElementById("dropArea");
 var ima=document.getElementById("imgArea");
@@ -105,24 +58,26 @@ function onFileLoaded(e){
 			r.onload=function(e){
 				ima.src=e.target.result;
 				ima.onload=function(){
-					ima.onload=null;
+					ima.onload=function(){
+						ima.onload=null;
+						counter=0;
+						document.getElementById("status").style.display='';
+						interval=setInterval(function(){
+							if(busy)return;
+							busy=true;
+							ima.src=compress(ima,50+Math.random()*50);
+							counter++;
+							document.getElementById("counter").innerHTML=counter;
+							busy=false;
+						}.bind(this),100);
+					}.bind(this);	
 					if(ima.naturalHeight>MAX_SIZE||ima.naturalWidth>MAX_SIZE){
 						if(ima.naturalWidth>=ima.naturalHeight){
 							ima.src=scale(ima,MAX_SIZE/ima.naturalWidth);
 						}else{
 							ima.src=scale(ima,MAX_SIZE/ima.naturalHeight);
 						}
-					}
-					counter=0;
-					document.getElementById("status").style.display='';
-					interval=setInterval(function(){
-						if(busy)return;
-						busy=true;
-						ima.src=compress(ima,50+Math.random()*50);
-						counter++;
-						document.getElementById("counter").innerHTML=counter;
-						busy=false;
-					}.bind(this),100);
+					}else ima.onload();
 				}.bind(this);
 			}.bind(this);
 			r.readAsDataURL(f);
@@ -132,6 +87,15 @@ function onFileLoaded(e){
 d.addEventListener('drop',function(e){onFileLoaded(e)}.bind(this));
 document.getElementById("manualInput").addEventListener('change',function(e){onFileLoaded(e)}.bind(this));
 document.body.addEventListener('click',function(){if(interval){clearInterval(interval);ima.style.display='none';d.style.display='';busy=false;counter=0;document.getElementById("status").style.display='none';}}.bind(this));
+function resizeIma(){
+	var iw=ima.naturalWidth, ih=ima.naturalHeight, cw=document.body.clientWidth, ch=document.body.clientHeight;
+	//if(iw>cw||ih>ch){
+		var ir=iw/ih, lr=cw/ch;
+		if(ir>=lr) ima.className="fullWidth"; else ima.className="fullHeight";
+	//}else ima.className="";
+	requestAnimationFrame(resizeIma);
+}
+requestAnimationFrame(resizeIma);
 </script>
 </body>
 </html>
