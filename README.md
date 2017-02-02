@@ -2,14 +2,14 @@
 OCD compresses an image using lossy JPEG compression repeatedly, creating increasingly strong compression artifacts, much like the ones seen on Instagram memes that have been reposted 130 times.
 
 ## Try it now
-[Obsessive Compressive Disorder](http://ocd.adolfintel.com/)
+[Obsessive Compressive Disorder](http://ocd.fdossena.com/)
 
-[Website](http://adolfintel.com/?p=ocd/index.frag)
+[Website](http://fdossena.com/?p=ocd/index.frag)
 
 ## Screenshots
-![Screenshot](http://adolfintel.com/ocd/screen3.jpg)
-![Screenshot](http://adolfintel.com/ocd/screen2.jpg)
-![Screenshot](http://adolfintel.com/ocd/screen1.jpg)
+![Screenshot](http://fdossena.com/ocd/screen3.jpg)
+![Screenshot](http://fdossena.com/ocd/screen2.jpg)
+![Screenshot](http://fdossena.com/ocd/screen1.jpg)
 
 ## Compatibility
 Any modern-ish browser
