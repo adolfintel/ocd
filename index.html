@@ -1,101 +1,108 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Obsessive Compressive Disorder</title>
-<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, minimum-scale=1, maximum-scale=1" />
-<meta name="description" content="Image quality devastator. Compresses an image repeatedly using lossy JPEG compression" />
-<meta property="og:image" content="http://ocd.adolfintel.com/social.jpg"/>
-<link rel="stylesheet" type="text/css" href="style.css"/>
-<script type="text/javascript">
-function compress(img,quality){
-	var c=document.createElement('canvas');
-	c.width=img.naturalWidth;
-	c.height=img.naturalHeight;
-	c.getContext("2d").drawImage(img,0,0);
-	return c.toDataURL("image/jpeg",quality/100);
-}
-function scale(img,scale){
-	if(img.naturalHeight==0||img.naturalWidth==0) return img;
-	var c=document.createElement('canvas');
-	c.width=img.naturalWidth*scale;
-	c.height=img.naturalHeight*scale;
-	c.getContext("2d").drawImage(img,0,0,c.width,c.height);
-	return c.toDataURL();
-}
-</script>
+	<title>Obsessive Compressive Disorder</title>
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, minimum-scale=1, maximum-scale=1">
+	<meta name="description" content="Image quality devastator. Compresses an image repeatedly using lossy JPEG compression">
+	<meta property="og:image" content="http://ocd.adolfintel.com/social.jpg">
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<script type="text/javascript">
+		function compress(img, quality) {
+			var c = document.createElement('canvas');
+			c.width = img.naturalWidth;
+			c.height = img.naturalHeight;
+			c.getContext("2d").drawImage(img, 0, 0);
+			return c.toDataURL("image/jpeg", quality/100);
+		}
+		function scale(img, scale) {
+			if (img.naturalHeight == 0 || img.naturalWidth == 0) return img;
+			var c = document.createElement('canvas');
+			c.width = img.naturalWidth*scale;
+			c.height = img.naturalHeight*scale;
+			c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+			return c.toDataURL();
+		}
+	</script>
 </head>
 <body>
-<div id="dropArea">
-	<div id="dropText">
-		Drop an image here<br/>
-		<input type="file" id="manualInput"/>
-		<div style="margin-top:4em; font-size:1rem;">
-			<a href="https://github.com/adolfintel/ocd" target="_blank">Source code</a>
+	<div id="dropArea">
+		<div id="dropText">
+			Drop an image here<br>
+			<input type="file" id="manualInput">
+			<div style="margin-top:4em; font-size:1rem;">
+				<a href="https://github.com/adolfintel/ocd" target="_blank">Source code</a>
+			</div>
 		</div>
 	</div>
-</div>
-<div id="status" style="display:none">
-	Compressed <span id="counter">0</span> times<br/>Tap anywhere to stop
-</div>
-<img id="imgArea" style="display:none"></img>
-<script type="text/javascript">
-var MAX_SIZE=1200;
-var counter=0;
-var d=document.getElementById("dropArea");
-var ima=document.getElementById("imgArea");
-var interval;
-var busy=false;
-d.addEventListener('dragover',function(e){e.preventDefault();});
-d.addEventListener('dragleave',function(e){e.preventDefault();});
-function onFileLoaded(e){
-	e.preventDefault();
-	try{
-		var f=e.target.files?e.target.files[0]:e.dataTransfer.files[0];
-		if(f.type.indexOf('image')!=-1){
-			d.style.display='none';
-			ima.style.display='';
-			var r=new FileReader();
-			r.onload=function(e){
-				ima.src=e.target.result;
-				ima.onload=function(){
-					ima.onload=function(){
-						ima.onload=null;
-						counter=0;
-						document.getElementById("status").style.display='';
-						interval=setInterval(function(){
-							if(busy)return;
-							busy=true;
-							ima.src=compress(ima,50+Math.random()*50);
-							counter++;
-							document.getElementById("counter").innerHTML=counter;
-							busy=false;
-						}.bind(this),100);
-					}.bind(this);	
-					if(ima.naturalHeight>MAX_SIZE||ima.naturalWidth>MAX_SIZE){
-						if(ima.naturalWidth>=ima.naturalHeight){
-							ima.src=scale(ima,MAX_SIZE/ima.naturalWidth);
-						}else{
-							ima.src=scale(ima,MAX_SIZE/ima.naturalHeight);
-						}
-					}else ima.onload();
-				}.bind(this);
-			}.bind(this);
-			r.readAsDataURL(f);
+	<div id="status" style="display:none">
+		Compressed <span id="counter">0</span> times<br>
+		Tap anywhere to stop
+	</div>
+	<img id="imgArea" style="display:none">
+	<script type="text/javascript">
+		var MAX_SIZE = 1200, counter = 0, d = document.getElementById("dropArea"), ima = document.getElementById("imgArea"), interval, busy = false;
+		d.addEventListener('dragover', function(e) {e.preventDefault();});
+		d.addEventListener('dragleave', function(e) {e.preventDefault();});
+		function onFileLoaded(e) {
+			e.preventDefault();
+			try {
+				var f = e.target.files ? e.target.files[0] : e.dataTransfer.files[0];
+				if (f.type.indexOf('image') != -1) {
+					d.style.display = 'none';
+					ima.style.display = '';
+					var r = new FileReader();
+					r.onload = function(e) {
+						ima.src = e.target.result;
+						ima.onload = function() {
+							ima.onload = function() {
+								ima.onload = null;
+								counter = 0;
+								document.getElementById("status").style.display = '';
+								interval=setInterval(function() {
+									if (busy) return;
+									busy = true;
+									ima.src = compress(ima, 50+Math.random()*50);
+									counter++;
+									document.getElementById("counter").innerHTML = counter;
+									busy = false;
+								}.bind(this), 100);
+							}.bind(this);	
+							if (ima.naturalHeight > MAX_SIZE || ima.naturalWidth > MAX_SIZE) {
+								if (ima.naturalWidth >= ima.naturalHeight) {
+									ima.src = scale(ima, MAX_SIZE/ima.naturalWidth);
+								} else {
+									ima.src = scale(ima, MAX_SIZE/ima.naturalHeight);
+								}
+							} else ima.onload();
+						}.bind(this);
+					}.bind(this);
+					r.readAsDataURL(f);
+				}
+			} catch(e) {console.log(e);}
 		}
-	}catch(e){console.log(e);}
-}
-d.addEventListener('drop',function(e){onFileLoaded(e)}.bind(this));
-document.getElementById("manualInput").addEventListener('change',function(e){onFileLoaded(e)}.bind(this));
-document.body.addEventListener('click',function(){if(interval){clearInterval(interval);ima.style.display='none';d.style.display='';busy=false;counter=0;document.getElementById("status").style.display='none';}}.bind(this));
-function resizeIma(){
-	var iw=ima.naturalWidth, ih=ima.naturalHeight, cw=document.body.clientWidth, ch=document.body.clientHeight;
-	//if(iw>cw||ih>ch){
-		var ir=iw/ih, lr=cw/ch;
-		if(ir>=lr) ima.className="fullWidth"; else ima.className="fullHeight";
-	//}else ima.className="";
-	requestAnimationFrame(resizeIma);
-}
-requestAnimationFrame(resizeIma);
-</script>
+		d.addEventListener('drop', function(e) {onFileLoaded(e)}.bind(this));
+		document.getElementById("manualInput").addEventListener('change', function(e) {onFileLoaded(e)}.bind(this));
+		document.body.addEventListener('click', function() {
+			if (interval) {
+				clearInterval(interval);
+				ima.style.display = 'none';
+				d.style.display = '';
+				busy = false;
+				counter = 0;
+				document.getElementById("status").style.display = 'none';
+			}
+		}.bind(this));
+		
+		function resizeIma() {
+			var iw = ima.naturalWidth, ih = ima.naturalHeight, cw = document.body.clientWidth, ch = document.body.clientHeight;
+			//if (iw > cw || ih > ch) {
+				var ir = iw/ih, lr = cw/ch;
+				if (ir >= lr) ima.className = "fullWidth";
+				else ima.className = "fullHeight";
+			//} else ima.className = "";
+			requestAnimationFrame(resizeIma);
+		}
+		requestAnimationFrame(resizeIma);
+	</script>
 </body>
 </html>
